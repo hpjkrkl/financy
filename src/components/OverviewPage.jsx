@@ -1,7 +1,10 @@
+import React from 'react';
 import { useKanso } from '../context/KansoContext';
 import NarrativeInput from './NarrativeInput';
 import MindfulPause from './MindfulPause';
 import Ledger from './Ledger';
+import RippleLedger from './RippleLedger';
+import GratitudeEcho from './GratitudeEcho';
 
 export default function OverviewPage() {
     const {
@@ -16,8 +19,30 @@ export default function OverviewPage() {
         handleReflect: onReflect,
         handleGoBack: onGoBack,
         handleConfirm: onConfirm,
-        handleDeleteTransaction: onDelete
+        handleDeleteTransaction: onDelete,
+        patienceQueue, setPatienceQueue
     } = useKanso();
+
+    const [activeEcho, setActiveEcho] = React.useState(null);
+    const [ledgerView, setLedgerView] = React.useState('list');
+
+    const gratitudeEchoes = React.useMemo(() => {
+        return patienceQueue.filter(item => 
+            item.status === 'purchased' && 
+            item.purchasedAt && 
+            Date.now() - new Date(item.purchasedAt).getTime() > 14 * 24 * 60 * 60 * 1000
+        );
+    }, [patienceQueue]);
+
+    React.useEffect(() => {
+        if (gratitudeEchoes.length > 0 && !activeEcho) {
+            setActiveEcho(gratitudeEchoes[0]);
+        }
+    }, [gratitudeEchoes, activeEcho]);
+
+    const handleEchoDismiss = () => {
+        setActiveEcho(null);
+    };
 
     return (
         <div className="animate-fade-in">
@@ -33,6 +58,12 @@ export default function OverviewPage() {
                     Available across all accounts.
                 </p>
             </section>
+
+            {activeEcho && (
+                <section className="mb-12">
+                    <GratitudeEcho item={activeEcho} onDismiss={handleEchoDismiss} />
+                </section>
+            )}
 
             {/* Two-column: Journal + Ledger */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
@@ -72,7 +103,36 @@ export default function OverviewPage() {
 
                 {/* Ledger */}
                 <section className="lg:col-span-7">
-                    <Ledger transactions={transactions} onDelete={onDelete} />
+                    <div className="flex justify-between items-end border-b border-sand pb-4 mb-8">
+                        <h2 className="font-serif text-2xl text-ink">Recent</h2>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => setLedgerView('list')}
+                                className={`px-3 py-1 text-xs rounded-full transition-colors cursor-pointer
+                                    ${ledgerView === 'list' 
+                                        ? 'bg-ink text-paper' 
+                                        : 'bg-stroke-light text-ink-light hover:bg-stroke'
+                                    }`}
+                            >
+                                List
+                            </button>
+                            <button
+                                onClick={() => setLedgerView('ripple')}
+                                className={`px-3 py-1 text-xs rounded-full transition-colors cursor-pointer
+                                    ${ledgerView === 'ripple' 
+                                        ? 'bg-ink text-paper' 
+                                        : 'bg-stroke-light text-ink-light hover:bg-stroke'
+                                    }`}
+                            >
+                                Ripple
+                            </button>
+                        </div>
+                    </div>
+                    {ledgerView === 'list' ? (
+                        <Ledger transactions={transactions} onDelete={onDelete} />
+                    ) : (
+                        <RippleLedger transactions={transactions} />
+                    )}
                 </section>
             </div>
         </div>

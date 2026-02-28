@@ -30,6 +30,14 @@ export default function PatienceQueue() {
         setItems(items.filter(item => item.id !== id));
     };
 
+    const handleAcquire = (item) => {
+        setItems(items.map(i => 
+            i.id === item.id 
+                ? { ...i, status: 'purchased', purchasedAt: new Date().toISOString() }
+                : i
+        ));
+    };
+
     const calculateDaysRemaining = (item) => {
         const added = new Date(item.dateAdded);
         const ready = new Date(added.getTime() + item.waitDays * 24 * 60 * 60 * 1000);
@@ -94,12 +102,12 @@ export default function PatienceQueue() {
             </section>
 
             <section className="space-y-6">
-                {items.length === 0 ? (
+                {items.filter(item => item.status !== 'purchased').length === 0 ? (
                     <div className="text-center py-20 border border-sand/50 text-stone text-sm italic">
                         Your mind is clear. No desires currently pending.
                     </div>
                 ) : (
-                    items.map((item, idx) => {
+                    items.filter(item => item.status !== 'purchased').map((item, idx) => {
                         const daysLeft = calculateDaysRemaining(item);
                         const isReady = daysLeft === 0;
                         const staggerClass = `stagger-${Math.min((idx % 5) + 1, 5)}`;
@@ -122,11 +130,10 @@ export default function PatienceQueue() {
                                                 Ready for reflection. Still needed?
                                             </span>
                                             <div className="flex gap-4 w-full md:w-auto">
-                                                {/* In a real scenario, "Acquire" would redirect to Journal and auto-fill */}
                                                 <button onClick={() => handleRelease(item.id)} className="flex-1 md:flex-none border border-sand px-4 py-2 text-xs uppercase tracking-widest text-ink hover:bg-ink hover:text-paper transition-all">
                                                     Release Desire
                                                 </button>
-                                                <button onClick={() => handleRelease(item.id)} className="flex-1 md:flex-none border border-sage bg-sage text-white px-4 py-2 text-xs uppercase tracking-widest hover:opacity-80 transition-opacity">
+                                                <button onClick={() => handleAcquire(item)} className="flex-1 md:flex-none border border-sage bg-sage text-white px-4 py-2 text-xs uppercase tracking-widest hover:opacity-80 transition-opacity">
                                                     Acquire
                                                 </button>
                                             </div>

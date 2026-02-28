@@ -8,12 +8,7 @@ export default function MindfulPause() {
 
     return (
         <div className="animate-fade-in flex flex-col items-center text-center py-6">
-            {/* Pulsing Enso circle */}
-            <Circle
-                size={36}
-                strokeWidth={1}
-                className="mb-8 animate-pulse-slow text-sage"
-            />
+            <Circle size={32} strokeWidth={1} className="mb-6 text-sage animate-pulse-slow" />
 
             <h3 className="font-serif text-3xl mb-5 text-ink">Mindful Pause</h3>
 
@@ -24,7 +19,6 @@ export default function MindfulPause() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
-                {/* Cancel */}
                 <button
                     onClick={onGoBack}
                     className="px-6 py-3 text-xs tracking-[0.2em] uppercase text-ink-light
@@ -32,8 +26,6 @@ export default function MindfulPause() {
                 >
                     Go Back
                 </button>
-
-                {/* Confirm */}
                 <button
                     onClick={onConfirm}
                     className="px-8 py-3 text-xs tracking-[0.2em] uppercase rounded-full
