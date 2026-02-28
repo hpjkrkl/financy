@@ -19,8 +19,8 @@ export default function MindfulPause() {
 
             <p className="font-light leading-relaxed max-w-sm mb-10 text-ink-light">
                 {isExpense
-                    ? `You are parting with $${formattedAmount} at ${merchant}. Take a breath. Does this align with your current intentions?`
-                    : `You are receiving $${formattedAmount} from ${merchant}. Take a moment to appreciate this inflow.`}
+                    ? `You are parting with RM${formattedAmount} at ${merchant}. Take a breath. Does this align with your current intentions?`
+                    : `You are receiving RM${formattedAmount} from ${merchant}. Take a moment to appreciate this inflow.`}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">

@@ -12,16 +12,16 @@ export function KansoProvider({ children }) {
 
     const [patienceQueue, setPatienceQueue] = useLocalStorage('kanso_patience_queue', []);
     const [vessels, setVessels] = useLocalStorage('kanso_vessels', [
-        { id: 1, name: 'Foundation', allocated: 0 },
-        { id: 2, name: 'Growth', allocated: 0 },
-        { id: 3, name: 'Joy', allocated: 0 }
+        { id: 1, name: 'Needs', allocated: 0 },
+        { id: 2, name: 'Savings', allocated: 0 },
+        { id: 3, name: 'Wants', allocated: 0 }
     ]);
 
     const [currentMonth, setCurrentMonth] = useLocalStorage('kanso_current_month', 'all');
     const [isDark, setIsDark] = useLocalStorage('kanso_dark_mode', false);
     const [rhythms, setRhythms] = useLocalStorage('kanso_rhythms', [
-        { id: 1, name: 'Rent', amount: 1200, vessel: 'Foundation' },
-        { id: 2, name: 'Streaming', amount: 15, vessel: 'Joy' },
+        { id: 1, name: 'Rent', amount: 1200, vessel: 'Needs' },
+        { id: 2, name: 'Streaming', amount: 15, vessel: 'Wants' },
     ]);
 
     // Apply dark class to body

@@ -9,7 +9,7 @@ Kanso (簡素) is the Zen principle of **simplicity** and the elimination of clu
 
 ### The "No-Budget" Rule
 *   **Philosophy**: Budgets are restrictive and often lead to guilt. 
-*   **Kanso Way**: Instead of budgets, we use **Vessels**. Money is "energy" that rests in different containers (Foundation, Joy, Growth, etc.). We don't "spend against a limit"; we "release energy from a vessel."
+*   **Kanso Way**: Instead of budgets, we use **Vessels**. Money is "energy" that rests in different containers (Needs, Wants, Savings, etc.). We don't "spend against a limit"; we "release energy from a vessel."
 
 ### Mindfulness over Statistics
 *   **The Narrative Input**: Transactions are entered as sentences ("I am recording an expense of..."). This forces the user to pause and acknowledge the action.

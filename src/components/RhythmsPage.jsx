@@ -41,7 +41,7 @@ export default function RhythmsPage() {
                 </p>
                 <div className="flex items-end gap-2">
                     <span className="text-xs uppercase tracking-widest text-ink-light">Total Monthly Flow</span>
-                    <span className="font-serif text-2xl text-ink">${totalMonthly.toFixed(2)}</span>
+                    <span className="font-serif text-2xl text-ink">RM{totalMonthly.toFixed(2)}</span>
                 </div>
             </section>
 
@@ -113,7 +113,7 @@ export default function RhythmsPage() {
                                 </div>
                             </div>
                             <div className="flex items-center gap-6">
-                                <span className="font-serif text-xl text-ink tabular-nums">${r.amount.toFixed(2)}<span className="text-xs text-ink-light ml-1">/mo</span></span>
+                                <span className="font-serif text-xl text-ink tabular-nums">RM{r.amount.toFixed(2)}<span className="text-xs text-ink-light ml-1">/mo</span></span>
                                 <button
                                     onClick={() => handleRemove(r.id)}
                                     className="opacity-0 group-hover:opacity-100 text-stone hover:text-ink transition-all p-1"

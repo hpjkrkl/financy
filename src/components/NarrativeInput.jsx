@@ -33,7 +33,7 @@ export default function NarrativeInput() {
                 </button>
 
                 {' '}of{' '}
-                <span className="text-ink">$</span>
+                <span className="text-ink">RM</span>
 
                 {/* Amount input */}
                 <input

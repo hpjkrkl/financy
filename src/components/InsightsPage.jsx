@@ -42,7 +42,7 @@ function InsightCards({ categoryTotals }) {
                 <h3 className="font-serif text-xl mb-2 text-ink">Intentional Spending</h3>
                 <p className="text-sm leading-relaxed text-ink-light">
                     You recorded{' '}
-                    <strong className="text-ink">${topCategory?.total.toFixed(2)}</strong> in{' '}
+                    <strong className="text-ink">RM{topCategory?.total.toFixed(2)}</strong> in{' '}
                     {topCategory?.name}. This is your largest category, representing what holds your
                     focus right now.
                 </p>

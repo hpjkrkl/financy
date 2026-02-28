@@ -78,7 +78,7 @@ export default function Ledger({ transactions, onDelete }) {
                                         className={`text-sm font-medium tabular-nums ${tx.type === 'expense' ? 'text-ink' : 'text-sage'
                                             }`}
                                     >
-                                        {tx.type === 'expense' ? '−' : '+'} ${tx.amount.toFixed(2)}
+                                        {tx.type === 'expense' ? '−' : '+'} RM{tx.amount.toFixed(2)}
                                     </span>
                                     <button
                                         onClick={() => handleDelete(tx.id)}

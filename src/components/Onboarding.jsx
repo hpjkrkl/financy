@@ -74,7 +74,7 @@ export default function Onboarding({ onComplete }) {
 
                         <form onSubmit={handleFinish} className="flex flex-col items-center space-y-12 animate-slide-up-slow">
                             <div className="flex items-end justify-center text-4xl md:text-6xl text-ink font-serif group">
-                                <span className="mr-2 text-stone opacity-50 group-focus-within:opacity-100 transition-opacity">$</span>
+                                <span className="mr-2 text-stone opacity-50 group-focus-within:opacity-100 transition-opacity">RM</span>
                                 <input
                                     type="number"
                                     step="0.01"

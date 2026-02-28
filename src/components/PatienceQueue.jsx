@@ -61,7 +61,7 @@ export default function PatienceQueue() {
                         />
                     </div>
                     <div className="space-y-2 w-full md:w-32">
-                        <label className="text-xs uppercase tracking-widest text-ink-light block">Energy ($)</label>
+                        <label className="text-xs uppercase tracking-widest text-ink-light block">Energy (RM)</label>
                         <input
                             type="number"
                             value={cost}
@@ -111,7 +111,7 @@ export default function PatienceQueue() {
                             >
                                 <div>
                                     <h3 className="text-xl md:text-2xl font-serif text-ink">{item.name}</h3>
-                                    <p className="text-sm text-ink-light mt-1 tabular-nums">${item.cost.toFixed(2)}</p>
+                                    <p className="text-sm text-ink-light mt-1 tabular-nums">RM{item.cost.toFixed(2)}</p>
                                 </div>
 
                                 <div className="mt-6 md:mt-0 flex items-center gap-6">

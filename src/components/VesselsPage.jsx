@@ -58,7 +58,7 @@ export default function VesselsPage() {
                     <div>
                         <p className="text-xs uppercase tracking-widest text-ink-light mb-2">Unallocated Energy</p>
                         <h2 className={`font-serif text-4xl ${unallocatedEnergy < 0 ? 'text-stone' : 'text-sage'}`}>
-                            ${unallocatedEnergy.toFixed(2)}
+                            RM${unallocatedEnergy.toFixed(2)}
                         </h2>
                     </div>
                     <div className="text-sm text-ink-light mt-4 md:mt-0 max-w-sm text-center md:text-right">
@@ -90,7 +90,7 @@ export default function VesselsPage() {
                                 <div className="text-xs mt-4 uppercase tracking-widest text-ink-light mb-6 flex justify-between">
                                     <span>Remaining</span>
                                     <span className={isEmpty ? 'text-stone italic' : 'text-ink'}>
-                                        ${remaining.toFixed(2)}
+                                        RM${remaining.toFixed(2)}
                                     </span>
                                 </div>
                             </div>
@@ -99,7 +99,7 @@ export default function VesselsPage() {
                                 <div>
                                     <label className="text-[10px] uppercase tracking-widest text-stone block mb-1">Total Allocated</label>
                                     <div className="flex items-center text-lg text-ink font-serif">
-                                        $
+                                        RM
                                         <input
                                             type="number"
                                             value={vessel.allocated || ''}
@@ -112,7 +112,7 @@ export default function VesselsPage() {
 
                                 <div className="pt-4 border-t border-sand/30 flex justify-between text-[10px] uppercase tracking-widest text-stone">
                                     <span>Energy Used</span>
-                                    <span>${expenses.toFixed(2)}</span>
+                                    <span>RM${expenses.toFixed(2)}</span>
                                 </div>
                             </div>
                         </div>

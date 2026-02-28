@@ -27,7 +27,7 @@ export default function OverviewPage() {
                     Current Balance
                 </p>
                 <h1 className="font-serif text-6xl md:text-8xl tracking-tight text-ink transition-all duration-500">
-                    ${balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    RM{balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </h1>
                 <p className="mt-4 text-sm font-light text-ink-light">
                     Available across all accounts.
