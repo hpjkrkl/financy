@@ -1,4 +1,3 @@
-import { Moon, Sun } from 'lucide-react';
 import { useKanso } from '../context/KansoContext';
 
 export default function Sidebar({ activeTab, setActiveTab, onOpenArchive }) {
@@ -6,10 +5,12 @@ export default function Sidebar({ activeTab, setActiveTab, onOpenArchive }) {
 
     const navItems = [
         { key: 'overview', label: 'Overview' },
-        { key: 'insights', label: 'Insights' },
-        { key: 'vessels', label: 'Vessels' },
-        { key: 'rhythms', label: 'Rhythms' },
-        { key: 'patience', label: 'Patience Queue' },
+        { key: 'transactions', label: 'Transactions' },
+        { key: 'banks', label: 'Banks' },
+        { key: 'tabungs', label: 'Tabungs' },
+        { key: 'recurring', label: 'Recurring' },
+        { key: 'wishlist', label: 'Wishlist' },
+        { key: 'settings', label: 'Settings' },
     ];
 
     return (
@@ -55,9 +56,9 @@ export default function Sidebar({ activeTab, setActiveTab, onOpenArchive }) {
                 <button
                     onClick={toggleDark}
                     aria-label="Toggle Midnight Zen"
-                    className="text-stone hover:text-ink transition-colors duration-300 cursor-pointer p-1"
+                    className="text-xs tracking-widest text-stone hover:text-ink transition-colors duration-300 cursor-pointer"
                 >
-                    {isDark ? <Sun size={14} strokeWidth={1.5} /> : <Moon size={14} strokeWidth={1.5} />}
+                    {isDark ? 'LIGHT' : 'DARK'}
                 </button>
             </div>
         </aside>

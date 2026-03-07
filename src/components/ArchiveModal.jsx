@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { Download, Upload, X } from 'lucide-react';
 import { useKanso } from '../context/KansoContext';
 
@@ -43,7 +43,7 @@ export default function ArchiveModal({ onClose }) {
 
                 // Reload to reflect newly imported data
                 window.location.reload();
-            } catch (error) {
+            } catch {
                 console.error("Failed to parse archive file");
                 alert("This file is not a valid Kanso archive.");
             }

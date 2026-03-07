@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Plus, Clock, Check, X } from 'lucide-react';
 import { useKanso } from '../context/KansoContext';
 
-export default function PatienceQueue() {
-    const { patienceQueue: items, setPatienceQueue: setItems } = useKanso();
+export default function Wishlist() {
+    const { wishlist: items, setWishlist: setItems } = useKanso();
     const [name, setName] = useState('');
     const [cost, setCost] = useState('');
     const [waitDays, setWaitDays] = useState(7);
@@ -42,7 +42,7 @@ export default function PatienceQueue() {
         <div className="animate-fade-in space-y-16">
             <section>
                 <h1 className="font-serif text-5xl md:text-6xl tracking-tight text-ink mb-4">
-                    Patience Queue
+                    Wishlist
                 </h1>
                 <p className="text-sm font-light text-ink-light leading-relaxed max-w-xl mb-12">
                     Instead of purchasing immediately, place your desires here. Allow time to reveal whether they truly serve your journey.
@@ -51,7 +51,7 @@ export default function PatienceQueue() {
                 {/* Add Item Form */}
                 <form onSubmit={handleAdd} className="bg-paper border border-sand p-6 md:p-8 flex flex-col md:flex-row gap-6 md:items-end">
                     <div className="flex-1 space-y-2">
-                        <label className="text-xs uppercase tracking-widest text-ink-light block">Desire</label>
+                        <label className="text-xs uppercase tracking-widest text-ink-light block">Item</label>
                         <input
                             type="text"
                             value={name}
@@ -61,7 +61,7 @@ export default function PatienceQueue() {
                         />
                     </div>
                     <div className="space-y-2 w-full md:w-32">
-                        <label className="text-xs uppercase tracking-widest text-ink-light block">Energy (RM)</label>
+                        <label className="text-xs uppercase tracking-widest text-ink-light block">Cost (RM)</label>
                         <input
                             type="number"
                             value={cost}
@@ -122,12 +122,12 @@ export default function PatienceQueue() {
                                                 Ready for reflection. Still needed?
                                             </span>
                                             <div className="flex gap-4 w-full md:w-auto">
-                                                {/* In a real scenario, "Acquire" would redirect to Journal and auto-fill */}
+                                                {/* In a real scenario, "Buy" would redirect to Journal and auto-fill */}
                                                 <button onClick={() => handleRelease(item.id)} className="flex-1 md:flex-none border border-sand px-4 py-2 text-xs uppercase tracking-widest text-ink hover:bg-ink hover:text-paper transition-all">
-                                                    Release Desire
+                                                    Remove
                                                 </button>
                                                 <button onClick={() => handleRelease(item.id)} className="flex-1 md:flex-none border border-sage bg-sage text-white px-4 py-2 text-xs uppercase tracking-widest hover:opacity-80 transition-opacity">
-                                                    Acquire
+                                                    Buy
                                                 </button>
                                             </div>
                                         </div>

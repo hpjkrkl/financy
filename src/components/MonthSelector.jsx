@@ -2,7 +2,7 @@ import { ChevronDown } from 'lucide-react';
 import { useKanso } from '../context/KansoContext';
 
 export default function MonthSelector() {
-    const { currentMonth, availableMonths, setCurrentMonth: onSelect } = useKanso();
+    const { currentMonth, availableMonths, setCurrentMonth: onSelect, currentRealMonth } = useKanso();
     const formatMonth = (monthString) => {
         if (!monthString) return 'All Time';
         if (monthString === 'all') return 'All Time';
@@ -23,6 +23,16 @@ export default function MonthSelector() {
                 <ul className="py-2">
                     <li>
                         <button
+                            className={`w-full text-left px-4 py-2 hover:bg-stone/10 transition-colors text-sm uppercase tracking-wider font-medium
+                ${currentMonth === currentRealMonth ? 'text-sage' : 'text-ink-light'}
+              `}
+                            onClick={() => onSelect(currentRealMonth)}
+                        >
+                            This Month
+                        </button>
+                    </li>
+                    <li>
+                        <button
                             className={`w-full text-left px-4 py-2 hover:bg-stone/10 transition-colors text-sm uppercase tracking-wider
                 ${currentMonth === 'all' ? 'text-sage' : 'text-ink-light'}
               `}
@@ -31,7 +41,7 @@ export default function MonthSelector() {
                             All Time
                         </button>
                     </li>
-                    {availableMonths.map((month) => (
+                    {availableMonths.filter(m => m !== currentRealMonth).map((month) => (
                         <li key={month}>
                             <button
                                 className={`w-full text-left px-4 py-2 hover:bg-stone/10 transition-colors text-sm uppercase tracking-wider

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useKanso } from '../context/KansoContext';
 
 export default function VesselsPage() {

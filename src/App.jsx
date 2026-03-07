@@ -2,10 +2,12 @@ import { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import MobileHeader from './components/MobileHeader';
 import OverviewPage from './components/OverviewPage';
-import InsightsPage from './components/InsightsPage';
-import PatienceQueue from './components/PatienceQueue';
-import VesselsPage from './components/VesselsPage';
-import RhythmsPage from './components/RhythmsPage';
+import TransactionsPage from './components/TransactionsPage';
+import BanksPage from './components/BanksPage';
+import TabungsPage from './components/TabungsPage';
+import RecurringPage from './components/RecurringPage';
+import Wishlist from './components/Wishlist';
+import SettingsPage from './components/SettingsPage';
 import Onboarding from './components/Onboarding';
 import MonthSelector from './components/MonthSelector';
 import ArchiveModal from './components/ArchiveModal';
@@ -48,10 +50,12 @@ function InnerApp() {
                     </div>
 
                     {activeTab === 'overview' && <OverviewPage />}
-                    {activeTab === 'insights' && <InsightsPage />}
-                    {activeTab === 'patience' && <PatienceQueue />}
-                    {activeTab === 'vessels' && <VesselsPage />}
-                    {activeTab === 'rhythms' && <RhythmsPage />}
+                    {activeTab === 'transactions' && <TransactionsPage />}
+                    {activeTab === 'banks' && <BanksPage />}
+                    {activeTab === 'tabungs' && <TabungsPage />}
+                    {activeTab === 'recurring' && <RecurringPage />}
+                    {activeTab === 'wishlist' && <Wishlist />}
+                    {activeTab === 'settings' && <SettingsPage />}
                 </div>
             </main>
 

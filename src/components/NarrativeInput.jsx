@@ -6,9 +6,13 @@ export default function NarrativeInput() {
         amount, setAmount,
         merchant, setMerchant,
         category, setCategory,
-        handleReflect: onReflect,
-        vessels
+        selectedBankId, setSelectedBankId,
+        selectedTabungId, setSelectedTabungId,
+        banks, tabungs,
+        handleReflect: onReflect
     } = useKanso();
+
+    const bankTabungs = selectedBankId ? tabungs.filter(t => t.bankId === Number(selectedBankId)) : [];
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -17,16 +21,22 @@ export default function NarrativeInput() {
         }
     };
 
+    const expenseCategories = ['Food', 'Transportation', 'Shopping', 'Entertainment', 'Bills', 'Healthcare', 'Education', 'Other'];
+
     return (
         <form onSubmit={handleSubmit} className="animate-fade-in">
             {/* Mad-libs narrative sentence */}
             <div className="font-serif text-xl md:text-3xl leading-[2.4] md:leading-[2.2] text-ink-light">
                 &ldquo;I am recording an{' '}
 
-                {/* Expense / Income toggle */}
+                {/* Expense / Income / Savings toggle */}
                 <button
                     type="button"
-                    onClick={() => setType(type === 'expense' ? 'income' : 'expense')}
+                    onClick={() => {
+                        if (type === 'expense') setType('income');
+                        else if (type === 'income') setType('savings');
+                        else setType('expense');
+                    }}
                     className="inline-block mx-1 pb-1 border-b border-ink text-ink hover:opacity-70 transition-opacity duration-300 focus:outline-none font-serif cursor-pointer"
                 >
                     {type}
@@ -60,7 +70,7 @@ export default function NarrativeInput() {
 
                 {' '}for{' '}
 
-                {/* Category / Vessel input */}
+                {/* Category input */}
                 {type === 'expense' ? (
                     <select
                         value={category}
@@ -68,10 +78,9 @@ export default function NarrativeInput() {
                         required
                         className="kanso-input w-auto inline-block text-center mx-1 font-serif text-xl md:text-3xl bg-transparent appearance-none cursor-pointer border-b border-dashed border-sand/50 pb-1"
                     >
-                        <option value="" disabled>vessel</option>
-                        <option value="Unallocated">Unallocated</option>
-                        {vessels?.map(v => (
-                            <option key={v.id} value={v.name}>{v.name}</option>
+                        <option value="">category</option>
+                        {expenseCategories.map(cat => (
+                            <option key={cat} value={cat}>{cat}</option>
                         ))}
                     </select>
                 ) : (
@@ -85,6 +94,43 @@ export default function NarrativeInput() {
                     />
                 )}
                 .&rdquo;
+            </div>
+
+            {/* Bank and Tabung Selection */}
+            <div className="mt-8 space-y-4">
+                <div>
+                    <label className="text-[10px] uppercase tracking-widest text-ink-light block mb-2">Bank Account</label>
+                    <select
+                        value={selectedBankId}
+                        onChange={(e) => {
+                            setSelectedBankId(e.target.value);
+                            setSelectedTabungId('');
+                        }}
+                        required
+                        className="w-full bg-transparent text-base md:text-lg text-ink border-b border-sand focus:border-ink outline-none transition-colors pb-2 cursor-pointer"
+                    >
+                        <option value="">Select bank</option>
+                        {banks.map(bank => (
+                            <option key={bank.id} value={bank.id}>{bank.name}</option>
+                        ))}
+                    </select>
+                </div>
+
+                {type === 'savings' && selectedBankId && bankTabungs.length > 0 && (
+                    <div>
+                        <label className="text-[10px] uppercase tracking-widest text-ink-light block mb-2">Tabung (Optional)</label>
+                        <select
+                            value={selectedTabungId}
+                            onChange={(e) => setSelectedTabungId(e.target.value)}
+                            className="w-full bg-transparent text-base md:text-lg text-ink border-b border-sand focus:border-ink outline-none transition-colors pb-2 cursor-pointer"
+                        >
+                            <option value="">No tabung</option>
+                            {bankTabungs.map(tabung => (
+                                <option key={tabung.id} value={tabung.id}>{tabung.name}</option>
+                            ))}
+                        </select>
+                    </div>
+                )}
             </div>
 
             {/* Submit */}

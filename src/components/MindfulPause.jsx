@@ -5,6 +5,7 @@ export default function MindfulPause() {
     const { type, amount, merchant, handleGoBack: onGoBack, handleConfirm: onConfirm } = useKanso();
     const formattedAmount = parseFloat(amount || 0).toFixed(2);
     const isExpense = type === 'expense';
+    const isSavings = type === 'savings';
 
     return (
         <div className="animate-fade-in flex flex-col items-center text-center py-6">
@@ -20,6 +21,8 @@ export default function MindfulPause() {
             <p className="font-light leading-relaxed max-w-sm mb-10 text-ink-light">
                 {isExpense
                     ? `You are parting with RM${formattedAmount} at ${merchant}. Take a breath. Does this align with your current intentions?`
+                    : isSavings
+                    ? `You are saving RM${formattedAmount} for ${merchant}. This brings you closer to your goal.`
                     : `You are receiving RM${formattedAmount} from ${merchant}. Take a moment to appreciate this inflow.`}
             </p>
 
@@ -39,7 +42,7 @@ export default function MindfulPause() {
                     className="px-8 py-3 text-xs tracking-[0.2em] uppercase rounded-full
                      bg-ink text-paper transition-opacity duration-300 hover:opacity-80 cursor-pointer"
                 >
-                    Record {isExpense ? 'Outflow' : 'Inflow'}
+                    Record {isExpense ? 'Outflow' : isSavings ? 'Savings' : 'Inflow'}
                 </button>
             </div>
         </div>

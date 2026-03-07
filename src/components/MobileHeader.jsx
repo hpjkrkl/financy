@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Menu, X, Moon, Sun } from 'lucide-react';
 import { useKanso } from '../context/KansoContext';
 
 export default function MobileHeader({ activeTab, setActiveTab, onOpenArchive }) {
@@ -8,10 +7,12 @@ export default function MobileHeader({ activeTab, setActiveTab, onOpenArchive })
 
     const navItems = [
         { key: 'overview', label: 'Overview' },
-        { key: 'insights', label: 'Insights' },
-        { key: 'vessels', label: 'Vessels' },
-        { key: 'rhythms', label: 'Rhythms' },
-        { key: 'patience', label: 'Patience Queue' },
+        { key: 'transactions', label: 'Transactions' },
+        { key: 'banks', label: 'Banks' },
+        { key: 'tabungs', label: 'Tabungs' },
+        { key: 'recurring', label: 'Recurring' },
+        { key: 'wishlist', label: 'Wishlist' },
+        { key: 'settings', label: 'Settings' },
     ];
 
     return (
@@ -25,17 +26,16 @@ export default function MobileHeader({ activeTab, setActiveTab, onOpenArchive })
                     <button
                         onClick={toggleDark}
                         aria-label="Toggle Midnight Zen"
-                        className="text-stone hover:text-ink transition-colors duration-300 cursor-pointer"
+                        className="text-xs tracking-widest text-stone hover:text-ink transition-colors duration-300 cursor-pointer"
                     >
-                        {isDark ? <Sun size={16} strokeWidth={1.5} /> : <Moon size={16} strokeWidth={1.5} />}
+                        {isDark ? 'LIGHT' : 'DARK'}
                     </button>
                     <button
                         onClick={() => setIsOpen(!isOpen)}
-                        className="text-ink transition-transform duration-300 cursor-pointer"
-                        style={{ transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}
+                        className="text-xs tracking-widest text-ink transition-colors duration-300 cursor-pointer"
                         aria-label="Toggle menu"
                     >
-                        {isOpen ? <X size={24} /> : <Menu size={24} />}
+                        {isOpen ? 'CLOSE' : 'MENU'}
                     </button>
                 </div>
             </div>
