@@ -5,7 +5,7 @@ export default function Onboarding({ onComplete }) {
     const [isTransitioning, setIsTransitioning] = useState(false);
 
     const [banks, setBanks] = useState([{ name: '', balance: '' }]);
-    const [tabungs, setTabungs] = useState([{ name: '', target: '', bankId: '' }]);
+    const [tabungs, setTabungs] = useState([{ name: '', target: '', current: '', bankId: '' }]);
     const [recurring, setRecurring] = useState([{ name: '', amount: '', category: 'bills' }]);
 
     const expenseCategories = ['bills', 'food', 'transport', 'shopping', 'entertainment', 'health', 'other'];
@@ -15,7 +15,7 @@ export default function Onboarding({ onComplete }) {
     };
 
     const handleAddTabung = () => {
-        setTabungs([...tabungs, { name: '', target: '', bankId: '' }]);
+        setTabungs([...tabungs, { name: '', target: '', current: '', bankId: '' }]);
     };
 
     const handleAddRecurring = () => {
@@ -75,7 +75,7 @@ export default function Onboarding({ onComplete }) {
                     id: Date.now() + banks.length + i,
                     name: t.name,
                     target: parseFloat(t.target),
-                    current: 0,
+                    current: t.current ? parseFloat(t.current) : 0,
                     bankId: parseInt(t.bankId)
                 }));
 
@@ -279,6 +279,18 @@ export default function Onboarding({ onComplete }) {
                                                 placeholder="Target"
                                                 value={tabung.target}
                                                 onChange={(e) => handleTabungChange(index, 'target', e.target.value)}
+                                                className="kanso-input text-center w-32"
+                                            />
+                                        </div>
+                                        <div className="flex items-center justify-center text-2xl font-serif">
+                                            <span className="mr-2 text-stone opacity-50">RM</span>
+                                            <input
+                                                type="number"
+                                                step="0.01"
+                                                min="0"
+                                                placeholder="Saved"
+                                                value={tabung.current}
+                                                onChange={(e) => handleTabungChange(index, 'current', e.target.value)}
                                                 className="kanso-input text-center w-32"
                                             />
                                         </div>
