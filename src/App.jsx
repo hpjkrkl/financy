@@ -7,6 +7,7 @@ import BanksPage from './components/BanksPage';
 import TabungsPage from './components/TabungsPage';
 import RecurringPage from './components/RecurringPage';
 import Wishlist from './components/Wishlist';
+import ReceiptsPage from './components/ReceiptsPage';
 import SettingsPage from './components/SettingsPage';
 import Onboarding from './components/Onboarding';
 import MonthSelector from './components/MonthSelector';
@@ -55,6 +56,7 @@ function InnerApp() {
                     {activeTab === 'tabungs' && <TabungsPage />}
                     {activeTab === 'recurring' && <RecurringPage />}
                     {activeTab === 'wishlist' && <Wishlist />}
+                    {activeTab === 'receipts' && <ReceiptsPage />}
                     {activeTab === 'settings' && <SettingsPage />}
                 </div>
             </main>

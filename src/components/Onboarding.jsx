@@ -214,7 +214,7 @@ export default function Onboarding({ onComplete }) {
                         <button
                             type="button"
                             onClick={handleAddBank}
-                            className="text-sm text-sage hover:text-ink transition-colors mb-8"
+                            className="text-sm text-sage hover:text-ink transition-colors mb-8 active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink/20 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
                         >
                             + Add another bank
                         </button>
@@ -223,14 +223,14 @@ export default function Onboarding({ onComplete }) {
                             <button
                                 type="button"
                                 onClick={prevStep}
-                                className="text-sm tracking-widest uppercase text-stone hover:text-ink transition-colors"
+                                className="text-sm tracking-widest uppercase text-stone hover:text-ink transition-colors active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink/20 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
                             >
                                 Back
                             </button>
                             <button
                                 type="button"
                                 onClick={nextStep}
-                                className="text-sm tracking-widest uppercase text-ink hover:text-sage transition-colors"
+                                className="text-sm tracking-widest uppercase text-ink hover:text-sage transition-colors active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink/20 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
                             >
                                 Next
                             </button>
@@ -316,7 +316,7 @@ export default function Onboarding({ onComplete }) {
                         <button
                             type="button"
                             onClick={handleAddTabung}
-                            className="text-sm text-sage hover:text-ink transition-colors mb-8"
+                            className="text-sm text-sage hover:text-ink transition-colors mb-8 active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink/20 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
                         >
                             + Add another tabung
                         </button>
@@ -325,14 +325,14 @@ export default function Onboarding({ onComplete }) {
                             <button
                                 type="button"
                                 onClick={prevStep}
-                                className="text-sm tracking-widest uppercase text-stone hover:text-ink transition-colors"
+                                className="text-sm tracking-widest uppercase text-stone hover:text-ink transition-colors active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink/20 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
                             >
                                 Back
                             </button>
                             <button
                                 type="button"
                                 onClick={nextStep}
-                                className="text-sm tracking-widest uppercase text-ink hover:text-sage transition-colors"
+                                className="text-sm tracking-widest uppercase text-ink hover:text-sage transition-colors active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink/20 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
                             >
                                 Next
                             </button>
@@ -403,7 +403,7 @@ export default function Onboarding({ onComplete }) {
                         <button
                             type="button"
                             onClick={handleAddRecurring}
-                            className="text-sm text-sage hover:text-ink transition-colors mb-8"
+                            className="text-sm text-sage hover:text-ink transition-colors mb-8 active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink/20 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
                         >
                             + Add another expense
                         </button>
@@ -412,14 +412,14 @@ export default function Onboarding({ onComplete }) {
                             <button
                                 type="button"
                                 onClick={prevStep}
-                                className="text-sm tracking-widest uppercase text-stone hover:text-ink transition-colors"
+                                className="text-sm tracking-widest uppercase text-stone hover:text-ink transition-colors active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink/20 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
                             >
                                 Back
                             </button>
                             <button
                                 type="button"
                                 onClick={handleFinish}
-                                className="text-sm tracking-widest uppercase text-ink hover:text-sage transition-colors"
+                                className="text-sm tracking-widest uppercase text-ink hover:text-sage transition-colors active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink/20 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
                             >
                                 Start
                             </button>

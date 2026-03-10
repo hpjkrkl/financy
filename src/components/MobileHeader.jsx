@@ -11,6 +11,7 @@ export default function MobileHeader({ activeTab, setActiveTab, onOpenArchive })
         { key: 'banks', label: 'Banks' },
         { key: 'tabungs', label: 'Tabungs' },
         { key: 'recurring', label: 'Recurring' },
+        { key: 'receipts', label: 'Receipts' },
         { key: 'wishlist', label: 'Wishlist' },
         { key: 'settings', label: 'Settings' },
     ];
@@ -26,13 +27,13 @@ export default function MobileHeader({ activeTab, setActiveTab, onOpenArchive })
                     <button
                         onClick={toggleDark}
                         aria-label="Toggle Midnight Zen"
-                        className="text-xs tracking-widest text-stone hover:text-ink transition-colors duration-300 cursor-pointer"
+                        className="text-xs tracking-widest text-stone hover:text-ink transition-colors duration-300 cursor-pointer active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink/20 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
                     >
                         {isDark ? 'LIGHT' : 'DARK'}
                     </button>
                     <button
                         onClick={() => setIsOpen(!isOpen)}
-                        className="text-xs tracking-widest text-ink transition-colors duration-300 cursor-pointer"
+                        className="text-xs tracking-widest text-ink transition-colors duration-300 cursor-pointer active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink/20 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
                         aria-label="Toggle menu"
                     >
                         {isOpen ? 'CLOSE' : 'MENU'}
@@ -61,7 +62,7 @@ export default function MobileHeader({ activeTab, setActiveTab, onOpenArchive })
                                 className={`text-left text-sm tracking-widest transition-colors duration-300 cursor-pointer ${activeTab === item.key
                                     ? 'text-ink font-medium'
                                     : 'text-ink-light'
-                                    }`}
+                                    } active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink/20 focus-visible:ring-offset-4 focus-visible:ring-offset-paper`}
                             >
                                 {item.label}
                             </button>
@@ -74,7 +75,7 @@ export default function MobileHeader({ activeTab, setActiveTab, onOpenArchive })
                                 onOpenArchive();
                                 setIsOpen(false);
                             }}
-                            className="text-left text-sm tracking-widest transition-colors duration-300 cursor-pointer text-stone hover:text-ink"
+                            className="text-left text-sm tracking-widest transition-colors duration-300 cursor-pointer text-stone hover:text-ink active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink/20 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
                         >
                             Zen Archive
                         </button>

@@ -1,38 +1,81 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useKanso } from '../context/KansoContext';
+import { useTauriStorage } from '../hooks/useTauriStorage';
+import { initialTransactions } from '../data/initialTransactions';
+
+const INITIAL_RECEIPT_SETTINGS = {
+    ollamaEnabled: true,
+    ollamaModel: 'moondream',
+    ollamaBaseUrl: 'http://localhost:11434',
+    autoCategory: true,
+    defaultTaxYear: 2025,
+    activeTaxYear: 2025
+};
 
 export default function SettingsPage() {
     const { 
         setHasOnboarded,
+        isDark,
+        toggleDark,
         banks,
         tabungs,
         recurringExpenses,
+        wishlist,
+        receipts,
+        setTransactions,
+        setCurrentMonth,
         setBanks,
         setTabungs,
-        setRecurringExpenses
+        setRecurringExpenses,
+        setWishlist,
+        setReceipts,
+        setReceiptSettings
     } = useKanso();
+
+    const [storedUserName, setStoredUserName, isUserNameLoading] = useTauriStorage('kanso_userName', '');
+    const [storedCurrency, setStoredCurrency, isCurrencyLoading] = useTauriStorage('kanso_currency', 'RM');
 
     const [userName, setUserName] = useState('');
     const [currency, setCurrency] = useState('RM');
     const [showResetConfirm, setShowResetConfirm] = useState(false);
 
+    useEffect(() => {
+        function syncUserName() {
+            if (!isUserNameLoading) {
+                setUserName(storedUserName || '');
+            }
+        }
+        syncUserName();
+    }, [isUserNameLoading, storedUserName]);
+
+    useEffect(() => {
+        function syncCurrency() {
+            if (!isCurrencyLoading) {
+                setCurrency(storedCurrency || 'RM');
+            }
+        }
+        syncCurrency();
+    }, [isCurrencyLoading, storedCurrency]);
+
     const handleSaveProfile = (e) => {
         e.preventDefault();
-        localStorage.setItem('kanso_userName', userName);
-        localStorage.setItem('kanso_currency', currency);
+        setStoredUserName(userName);
+        setStoredCurrency(currency);
     };
 
     const handleResetOnboarding = () => {
-        localStorage.removeItem('kanso_banks');
-        localStorage.removeItem('kanso_tabungs');
-        localStorage.removeItem('kanso_recurringExpenses');
-        localStorage.removeItem('kanso_transactions');
-        localStorage.removeItem('kanso_wishlist');
-        localStorage.removeItem('kanso_hasOnboarded');
-        
+        setStoredUserName('');
+        setStoredCurrency('RM');
+
         setBanks([]);
         setTabungs([]);
         setRecurringExpenses([]);
+        setTransactions(initialTransactions);
+        setWishlist([]);
+        setReceipts([]);
+        setReceiptSettings(INITIAL_RECEIPT_SETTINGS);
+        setCurrentMonth('all');
+        if (isDark) toggleDark();
         setHasOnboarded(false);
     };
 
@@ -70,7 +113,7 @@ export default function SettingsPage() {
                         </div>
                         <button
                             type="submit"
-                            className="text-sm tracking-widest uppercase text-ink hover:text-sage transition-colors"
+                            className="text-sm tracking-widest uppercase text-ink hover:text-sage transition-colors active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink/20 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
                         >
                             Save Profile
                         </button>
@@ -92,6 +135,14 @@ export default function SettingsPage() {
                             <span className="text-ink-light">Recurring Expenses</span>
                             <span className="text-ink">{recurringExpenses.length}</span>
                         </div>
+                        <div className="flex justify-between">
+                            <span className="text-ink-light">Wishlist</span>
+                            <span className="text-ink">{wishlist.length}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="text-ink-light">Receipts</span>
+                            <span className="text-ink">{receipts.length}</span>
+                        </div>
                     </div>
                 </section>
 
@@ -100,7 +151,7 @@ export default function SettingsPage() {
                     {!showResetConfirm ? (
                         <button
                             onClick={() => setShowResetConfirm(true)}
-                            className="text-sm tracking-widest uppercase text-stone hover:text-red-500 transition-colors"
+                            className="text-sm tracking-widest uppercase text-stone hover:text-red-500 transition-colors active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-700/30 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
                         >
                             Reset Onboarding
                         </button>
@@ -112,13 +163,13 @@ export default function SettingsPage() {
                             <div className="flex space-x-4">
                                 <button
                                     onClick={handleResetOnboarding}
-                                    className="text-sm tracking-widest uppercase text-red-500 hover:text-red-600 transition-colors"
+                                    className="text-sm tracking-widest uppercase text-red-500 hover:text-red-600 transition-colors active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-700/30 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
                                 >
                                     Confirm Reset
                                 </button>
                                 <button
                                     onClick={() => setShowResetConfirm(false)}
-                                    className="text-sm tracking-widest uppercase text-ink hover:text-sage transition-colors"
+                                    className="text-sm tracking-widest uppercase text-ink hover:text-sage transition-colors active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink/20 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
                                 >
                                     Cancel
                                 </button>

@@ -9,6 +9,7 @@ export default function Sidebar({ activeTab, setActiveTab, onOpenArchive }) {
         { key: 'banks', label: 'Banks' },
         { key: 'tabungs', label: 'Tabungs' },
         { key: 'recurring', label: 'Recurring' },
+        { key: 'receipts', label: 'Receipts' },
         { key: 'wishlist', label: 'Wishlist' },
         { key: 'settings', label: 'Settings' },
     ];
@@ -30,7 +31,7 @@ export default function Sidebar({ activeTab, setActiveTab, onOpenArchive }) {
                             className={`block text-sm tracking-widest relative transition-colors duration-300 cursor-pointer ${activeTab === item.key
                                 ? 'text-ink'
                                 : 'text-ink-light hover:text-ink'
-                                }`}
+                                } active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink/20 focus-visible:ring-offset-4 focus-visible:ring-offset-paper`}
                         >
                             {/* Active dot indicator */}
                             {activeTab === item.key && (
@@ -44,7 +45,7 @@ export default function Sidebar({ activeTab, setActiveTab, onOpenArchive }) {
                 {/* Archive Button */}
                 <button
                     onClick={onOpenArchive}
-                    className="mt-12 block text-sm tracking-widest text-stone hover:text-ink transition-colors duration-300 cursor-pointer"
+                    className="mt-12 block text-sm tracking-widest text-stone hover:text-ink transition-colors duration-300 cursor-pointer active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink/20 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
                 >
                     Zen Archive
                 </button>
@@ -56,7 +57,7 @@ export default function Sidebar({ activeTab, setActiveTab, onOpenArchive }) {
                 <button
                     onClick={toggleDark}
                     aria-label="Toggle Midnight Zen"
-                    className="text-xs tracking-widest text-stone hover:text-ink transition-colors duration-300 cursor-pointer"
+                    className="text-xs tracking-widest text-stone hover:text-ink transition-colors duration-300 cursor-pointer active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink/20 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
                 >
                     {isDark ? 'LIGHT' : 'DARK'}
                 </button>

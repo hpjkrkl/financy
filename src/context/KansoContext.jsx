@@ -1,15 +1,49 @@
 import React, { createContext, useContext, useMemo, useState } from 'react';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useTauriStorage } from '../hooks/useTauriStorage';
 import { initialTransactions } from '../data/initialTransactions';
+
+const INITIAL_BANKS = [
+    { id: 1, name: 'Maybank', balance: 5000, color: '#8BA888' },
+    { id: 2, name: 'CIMB', balance: 3000, color: '#D4A574' }
+];
+
+const INITIAL_TABUNGS = [
+    { id: 1, name: 'Emergency Fund', bankId: 1, target: 10000, current: 5000, purpose: 'rainy days', color: '#8BA888' },
+    { id: 2, name: 'Credit Card Payment', bankId: 1, target: 2000, current: 800, purpose: 'upcoming payment', color: '#D4A574' },
+    { id: 3, name: 'Japan Trip', bankId: 2, target: 15000, current: 3000, purpose: 'future plan', color: '#A8B4A5' }
+];
+
+const INITIAL_RECURRING_EXPENSES = [
+    { id: 1, name: 'Rent', amount: 1200, category: 'Housing', dueDate: 1, isActive: true, autoRecord: true },
+    { id: 2, name: 'Internet', amount: 100, category: 'Utilities', dueDate: 5, isActive: true, autoRecord: true },
+    { id: 3, name: 'Streaming', amount: 15, category: 'Entertainment', dueDate: 15, isActive: true, autoRecord: true }
+];
+
+const INITIAL_RECEIPT_SETTINGS = {
+    ollamaEnabled: true,
+    ollamaModel: 'moondream',
+    ollamaBaseUrl: 'http://localhost:11434',
+    autoCategory: true,
+    defaultTaxYear: 2025,
+    activeTaxYear: 2025
+};
+
+const TAX_RELIEF_CATEGORIES = [
+    { id: 'medical', name: 'Medical', limit: 8000, color: '#8BA888' },
+    { id: 'lifestyle', name: 'Lifestyle', limit: 2500, color: '#D4A574' },
+    { id: 'sports', name: 'Sports', limit: 500, color: '#A8B4A5' },
+    { id: 'education', name: 'Education', limit: 7000, color: '#C9B896' },
+    { id: 'other', name: 'Other', limit: null, color: '#9A8A7A' }
+];
 
 const KansoContext = createContext();
 
 export function KansoProvider({ children }) {
     // ─── Primitive State ──────────────────────────────
-    const [hasOnboarded, setHasOnboarded] = useLocalStorage('kanso_onboarded', false);
-    const [transactions, setTransactions] = useLocalStorage('kanso_transactions', initialTransactions);
-    const [currentMonth, setCurrentMonth] = useLocalStorage('kanso_current_month', 'all');
-    const [isDark, setIsDark] = useLocalStorage('kanso_dark_mode', false);
+    const [hasOnboarded, setHasOnboarded] = useTauriStorage('kanso_onboarded', false);
+    const [transactions, setTransactions] = useTauriStorage('kanso_transactions', initialTransactions);
+    const [currentMonth, setCurrentMonth] = useTauriStorage('kanso_current_month', 'all');
+    const [isDark, setIsDark] = useTauriStorage('kanso_dark_mode', false);
 
     // Get current real-time month
     const getCurrentMonthKey = () => {
@@ -19,41 +53,17 @@ export function KansoProvider({ children }) {
 
     const currentRealMonth = getCurrentMonthKey();
 
-    // Banks (Your actual bank accounts)
-    const [banks, setBanks] = useLocalStorage('kanso_banks', [
-        { id: 1, name: 'Maybank', balance: 5000, color: '#8BA888' },
-        { id: 2, name: 'CIMB', balance: 3000, color: '#D4A574' }
-    ]);
+    const [banks, setBanks] = useTauriStorage('kanso_banks', INITIAL_BANKS);
 
-    // Tabungs (Savings buckets within banks)
-    const [tabungs, setTabungs] = useState(() => {
-        try {
-            const saved = localStorage.getItem('kanso_tabungs');
-            if (saved) return JSON.parse(saved);
-        } catch (e) {
-            console.error('Error parsing tabungs from localStorage:', e);
-        }
-        return [
-            { id: 1, name: 'Emergency Fund', bankId: 1, target: 10000, current: 5000, purpose: 'rainy days', color: '#8BA888' },
-            { id: 2, name: 'Credit Card Payment', bankId: 1, target: 2000, current: 800, purpose: 'upcoming payment', color: '#D4A574' },
-            { id: 3, name: 'Japan Trip', bankId: 2, target: 15000, current: 3000, purpose: 'future plan', color: '#A8B4A5' }
-        ];
-    });
+    const [tabungs, setTabungs] = useTauriStorage('kanso_tabungs', INITIAL_TABUNGS);
 
-    // Save tabungs to localStorage whenever they change
-    React.useEffect(() => {
-        localStorage.setItem('kanso_tabungs', JSON.stringify(tabungs));
-    }, [tabungs]);
-
-    // Recurring Expenses (Fixed monthly expenses)
-    const [recurringExpenses, setRecurringExpenses] = useLocalStorage('kanso_recurring_expenses', [
-        { id: 1, name: 'Rent', amount: 1200, category: 'Housing', dueDate: 1, isActive: true, autoRecord: true },
-        { id: 2, name: 'Internet', amount: 100, category: 'Utilities', dueDate: 5, isActive: true, autoRecord: true },
-        { id: 3, name: 'Streaming', amount: 15, category: 'Entertainment', dueDate: 15, isActive: true, autoRecord: true }
-    ]);
+    const [recurringExpenses, setRecurringExpenses] = useTauriStorage('kanso_recurring_expenses', INITIAL_RECURRING_EXPENSES);
 
     // Wishlist (Items you're saving for)
-    const [wishlist, setWishlist] = useLocalStorage('kanso_wishlist', []);
+    const [wishlist, setWishlist] = useTauriStorage('kanso_wishlist', []);
+
+    const [receipts, setReceipts] = useTauriStorage('kanso_receipts', []);
+    const [receiptSettings, setReceiptSettings] = useTauriStorage('kanso_receipt_settings', INITIAL_RECEIPT_SETTINGS);
 
     // Apply dark class to body
     React.useEffect(() => {
@@ -118,6 +128,36 @@ export function KansoProvider({ children }) {
         });
         return Array.from(months).sort().reverse();
     }, [transactions]);
+
+    // Tax relief totals for current year
+    const activeTaxYear = useMemo(() => {
+        return receiptSettings.activeTaxYear ?? receiptSettings.defaultTaxYear;
+    }, [receiptSettings.activeTaxYear, receiptSettings.defaultTaxYear]);
+    const currentYearReceipts = useMemo(() => {
+        return receipts.filter(r => (r.taxYear ?? activeTaxYear) === activeTaxYear);
+    }, [receipts, activeTaxYear]);
+
+    const taxReliefTotals = useMemo(() => {
+        return TAX_RELIEF_CATEGORIES.reduce((acc, cat) => {
+            acc[cat.id] = currentYearReceipts
+                .filter(r => r.finalCategory === cat.id)
+                .reduce((sum, r) => sum + r.finalAmount, 0);
+            return acc;
+        }, {});
+    }, [currentYearReceipts]);
+
+    // Receipt stats
+    const receiptStats = useMemo(() => {
+        const totalClaimed = currentYearReceipts.reduce((sum, r) => sum + r.finalAmount, 0);
+        const totalVerified = currentYearReceipts.filter(r => r.isVerified).length;
+        
+        return {
+            totalReceipts: currentYearReceipts.length,
+            totalClaimed,
+            totalVerified,
+            totalUnverified: currentYearReceipts.length - totalVerified
+        };
+    }, [currentYearReceipts]);
 
     // ─── Form State ─────────────────────────────────
     const [type, setType] = useState('expense');
@@ -217,6 +257,28 @@ export function KansoProvider({ children }) {
         setTransactions(transactions.filter(t => t.id !== id));
     };
 
+    const handleAddReceipt = (receipt) => {
+        const activeTaxYear = receiptSettings.activeTaxYear ?? receiptSettings.defaultTaxYear;
+        const createdAt = new Date().toISOString();
+        const newReceipt = {
+            ...receipt,
+            id: Date.now(),
+            createdAt,
+            updatedAt: createdAt,
+            taxYear: receipt.taxYear ?? activeTaxYear,
+            isVerified: receipt.isVerified ?? false
+        };
+        setReceipts((prev) => [newReceipt, ...prev]);
+    };
+
+    const handleUpdateReceipt = (id, updates) => {
+        setReceipts(receipts.map(r => r.id === id ? { ...r, ...updates, updatedAt: new Date().toISOString() } : r));
+    };
+
+    const handleDeleteReceipt = (id) => {
+        setReceipts(receipts.filter(r => r.id !== id));
+    };
+
     return (
         <KansoContext.Provider value={{
             // Core
@@ -260,7 +322,17 @@ export function KansoProvider({ children }) {
 
             // Theme
             isDark,
-            toggleDark
+            toggleDark,
+
+            // Receipts
+            receipts, setReceipts,
+            receiptSettings, setReceiptSettings,
+            TAX_RELIEF_CATEGORIES,
+            taxReliefTotals,
+            receiptStats,
+            handleAddReceipt,
+            handleUpdateReceipt,
+            handleDeleteReceipt
         }}>
             {children}
         </KansoContext.Provider>
