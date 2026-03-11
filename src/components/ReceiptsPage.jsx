@@ -1,6 +1,7 @@
 import { useKanso } from '../context/KansoContext';
 import { useState, useMemo } from 'react';
-import { Plus, ChevronDown, ChevronUp, X, Layers, Clock, CheckCircle2, AlertCircle, Folder } from 'lucide-react';
+import { Plus, ChevronDown, ChevronUp, X, Layers, Clock, CheckCircle2, AlertCircle, Folder, Play, Loader2, RefreshCw, Zap, Eye, Power } from 'lucide-react';
+import { open } from '@tauri-apps/plugin-shell';
 import ReceiptUpload from './ReceiptUpload';
 import ReceiptReview from './ReceiptReview';
 import ReceiptOCRService from '../services/receiptOCRService';
@@ -12,6 +13,7 @@ export default function ReceiptsPage() {
     const [extractedData, setExtractedData] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
     const [error, setError] = useState(null);
+    const [ocrEnabled, setOcrEnabled] = useState(true);
 
     const ocrService = new ReceiptOCRService();
 
@@ -24,7 +26,9 @@ export default function ReceiptsPage() {
         setReceiptSettings,
         handleAddReceipt,
         handleUpdateReceipt,
-        handleDeleteReceipt
+        handleDeleteReceipt,
+        ocrEngineState,
+        startOcrEngine
     } = useKanso();
 
     const activeTaxYear = useMemo(() => {
@@ -113,11 +117,21 @@ export default function ReceiptsPage() {
 
     const handleScan = async (imageBase64, imageUrl) => {
         setError(null);
-        const data = await ocrService.extractReceiptData(imageBase64, {
-            baseUrl: receiptSettings.ollamaBaseUrl,
-            model: receiptSettings.ollamaModel
-        });
-        setExtractedData(data);
+        if (ocrEnabled) {
+            const data = await ocrService.extractReceiptData(imageBase64, {
+                baseUrl: receiptSettings.ollamaBaseUrl,
+                model: receiptSettings.ollamaModel
+            });
+            setExtractedData(data);
+        } else {
+            setExtractedData({
+                merchant: '',
+                amount: '',
+                date: '',
+                category: 'other',
+                confidence: 0
+            });
+        }
         setPreviewUrl(imageUrl);
         setIsUploading(false);
     };
@@ -141,6 +155,58 @@ export default function ReceiptsPage() {
         setPreviewUrl(null);
         setError(null);
     };
+
+    const handleViewReceiptImage = async (imagePath) => {
+        if (!imagePath) return;
+        try {
+            await open(imagePath);
+        } catch (error) {
+            console.error('Failed to open image:', error);
+        }
+    };
+
+    const getOcrButtonState = () => {
+        switch (ocrEngineState.status) {
+            case 'idle':
+                return {
+                    label: 'Start OCR',
+                    icon: Play,
+                    className: 'text-ink hover:text-ink-light',
+                    disabled: false
+                };
+            case 'starting':
+                return {
+                    label: 'Starting…',
+                    icon: Loader2,
+                    className: 'text-ink-light animate-spin',
+                    disabled: true
+                };
+            case 'ready':
+                return {
+                    label: 'OCR Ready',
+                    icon: Zap,
+                    className: 'text-sage',
+                    disabled: false
+                };
+            case 'error':
+                return {
+                    label: 'Retry',
+                    icon: RefreshCw,
+                    className: 'text-red-600 hover:text-red-700',
+                    disabled: false
+                };
+            default:
+                return {
+                    label: 'Start OCR',
+                    icon: Play,
+                    className: 'text-ink hover:text-ink-light',
+                    disabled: false
+                };
+        }
+    };
+
+    const ocrButtonState = getOcrButtonState();
+    const OcrButtonIcon = ocrButtonState.icon;
 
     if (isUploading) {
         return (
@@ -175,6 +241,72 @@ export default function ReceiptsPage() {
 
     return (
         <div className="animate-fade-in space-y-12">
+            <section className="border border-sand/30 rounded-lg p-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={startOcrEngine}
+                            disabled={ocrButtonState.disabled || !ocrEnabled}
+                            className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-colors active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink/20 focus-visible:ring-offset-4 focus-visible:ring-offset-paper ${
+                                ocrEngineState.status === 'ready' 
+                                    ? 'border-sage bg-sage/5' 
+                                    : 'border-sand/30 hover:border-sand/50'
+                            } ${ocrButtonState.disabled || !ocrEnabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                            <OcrButtonIcon className={`w-4 h-4 ${ocrButtonState.className}`} />
+                            <span className="text-sm font-medium text-ink">{ocrButtonState.label}</span>
+                        </button>
+                        <button
+                            onClick={() => setOcrEnabled(!ocrEnabled)}
+                            className={`flex items-center gap-2 px-3 py-2 border rounded-lg transition-colors active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink/20 focus-visible:ring-offset-4 focus-visible:ring-offset-paper ${
+                                ocrEnabled 
+                                    ? 'border-sage bg-sage/5 text-sage' 
+                                    : 'border-sand/30 text-ink-light hover:border-sand/50'
+                            }`}
+                        >
+                            <Power className="w-4 h-4" />
+                            <span className="text-sm font-medium">{ocrEnabled ? 'OCR On' : 'OCR Off'}</span>
+                        </button>
+                        <div className="flex-1 min-w-0">
+                            {ocrEngineState.status === 'idle' && ocrEnabled && (
+                                <p className="text-xs text-ink-light">OCR engine is idle. Start to enable receipt scanning.</p>
+                            )}
+                            {ocrEngineState.status === 'starting' && ocrEnabled && (
+                                <p className="text-xs text-ink-light">
+                                    {ocrEngineState.stage === 'checking' && 'Checking Ollama connection…'}
+                                    {ocrEngineState.stage === 'loading' && 'Loading OCR model…'}
+                                    {ocrEngineState.stage === 'warming' && 'Warming up OCR engine…'}
+                                    {ocrEngineState.stage === 'ready' && 'OCR engine is ready!'}
+                                </p>
+                            )}
+                            {ocrEngineState.status === 'ready' && ocrEnabled && (
+                                <p className="text-xs text-sage">OCR engine is ready. You can now upload and scan receipts.</p>
+                            )}
+                            {ocrEngineState.status === 'error' && ocrEnabled && (
+                                <p className="text-xs text-red-600">{ocrEngineState.error || 'Failed to start OCR engine'}</p>
+                            )}
+                            {!ocrEnabled && (
+                                <p className="text-xs text-ink-light">OCR is disabled. Receipts will be saved without automatic data extraction.</p>
+                            )}
+                        </div>
+                    </div>
+                    {ocrEngineState.status === 'starting' && (
+                        <div className="w-32 sm:w-40">
+                            <div className="w-full bg-sand/30 rounded-full h-1.5">
+                                <div
+                                    className="h-1.5 rounded-full transition-all duration-300"
+                                    style={{
+                                        width: `${ocrEngineState.progress}%`,
+                                        backgroundColor: '#8BA888'
+                                    }}
+                                ></div>
+                            </div>
+                            <p className="text-xs text-ink-light mt-1 text-right">{ocrEngineState.progress}%</p>
+                        </div>
+                    )}
+                </div>
+            </section>
+
             {error && (
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                     <div className="flex justify-between items-start">
@@ -431,24 +563,38 @@ export default function ReceiptsPage() {
                                             <p className="font-serif text-lg text-ink">
                                                 RM{receipt.finalAmount?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
                                             </p>
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleUpdateReceipt(receipt.id, { isVerified: !receipt.isVerified });
-                                                }}
-                                                className="text-xs text-ink-light hover:text-ink mt-1 transition-colors active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink/20 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
-                                            >
-                                                {receipt.isVerified ? 'Mark pending' : 'Mark verified'}
-                                            </button>
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleDeleteReceipt(receipt.id);
-                                                }}
-                                                className="text-xs text-red-600 hover:text-red-700 mt-1 transition-colors active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-700/30 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
-                                            >
-                                                Delete
-                                            </button>
+                                            <div className="flex flex-col gap-1 mt-1">
+                                                {receipt.imagePath && (
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleViewReceiptImage(receipt.imagePath);
+                                                        }}
+                                                        className="flex items-center gap-1 text-xs text-ink-light hover:text-ink transition-colors active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink/20 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
+                                                    >
+                                                        <Eye className="w-3 h-3" />
+                                                        View
+                                                    </button>
+                                                )}
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleUpdateReceipt(receipt.id, { isVerified: !receipt.isVerified });
+                                                    }}
+                                                    className="text-xs text-ink-light hover:text-ink transition-colors active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ink/20 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
+                                                >
+                                                    {receipt.isVerified ? 'Mark pending' : 'Mark verified'}
+                                                </button>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleDeleteReceipt(receipt.id);
+                                                    }}
+                                                    className="text-xs text-red-600 hover:text-red-700 transition-colors active:opacity-60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-700/30 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

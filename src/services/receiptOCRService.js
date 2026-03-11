@@ -202,6 +202,76 @@ class ReceiptOCRService {
         }
     }
 
+    async warmUpOcr(options = {}) {
+        const { baseUrl = this.baseUrl, model = this.model } = options;
+        const timeoutMs = typeof options.timeout === 'number' ? options.timeout : this.timeout;
+
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => {
+                controller.abort();
+            }, timeoutMs);
+
+            const response = await fetch(`${baseUrl}/api/generate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    model: model,
+                    prompt: 'Hello',
+                    stream: false,
+                    options: {
+                        temperature: 0.1,
+                        top_p: 0.9,
+                        num_predict: 5
+                    }
+                }),
+                signal: controller.signal
+            }).finally(() => {
+                clearTimeout(timeoutId);
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(
+                    errorData.error || `Ollama API error: ${response.status} ${response.statusText}`,
+                    { cause: errorData }
+                );
+            }
+
+            const data = await response.json();
+            
+            if (!data.response) {
+                throw new Error('No response from Ollama', { cause: data });
+            }
+
+            return {
+                success: true,
+                message: 'OCR model loaded and ready'
+            };
+
+        } catch (error) {
+            if (error?.name === 'AbortError' || error?.name === 'TimeoutError') {
+                const timeoutError = new Error(
+                    'OCR warm-up timed out. Ollama may be warming up — please try again.'
+                );
+                timeoutError.cause = error;
+                throw timeoutError;
+            }
+            
+            if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+                const connectionError = new Error(
+                    'Cannot connect to Ollama. Please ensure Ollama is running locally at ' + baseUrl
+                );
+                connectionError.cause = error;
+                throw connectionError;
+            }
+
+            throw error;
+        }
+    }
+
     async pullMoondreamModel(options = {}) {
         const { baseUrl = this.baseUrl } = options;
 

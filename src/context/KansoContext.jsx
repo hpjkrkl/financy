@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useMemo, useState } from 'react';
+import React, { createContext, useContext, useMemo, useState, useCallback } from 'react';
 import { useTauriStorage } from '../hooks/useTauriStorage';
 import { initialTransactions } from '../data/initialTransactions';
+import ReceiptOCRService from '../services/receiptOCRService';
 
 const INITIAL_BANKS = [
     { id: 1, name: 'Maybank', balance: 5000, color: '#8BA888' },
@@ -64,6 +65,80 @@ export function KansoProvider({ children }) {
 
     const [receipts, setReceipts] = useTauriStorage('kanso_receipts', []);
     const [receiptSettings, setReceiptSettings] = useTauriStorage('kanso_receipt_settings', INITIAL_RECEIPT_SETTINGS);
+
+    const [ocrEngineState, setOcrEngineState] = useState({
+        status: 'idle',
+        stage: null,
+        progress: 0,
+        error: null,
+        lastChecked: null
+    });
+
+    const startOcrEngine = useCallback(async () => {
+        if (ocrEngineState.status === 'starting') {
+            return;
+        }
+
+        setOcrEngineState(prev => ({
+            ...prev,
+            status: 'starting',
+            stage: 'checking',
+            progress: 10,
+            error: null
+        }));
+
+        const ocrService = new ReceiptOCRService({
+            baseUrl: receiptSettings.ollamaBaseUrl,
+            model: receiptSettings.ollamaModel
+        });
+
+        try {
+            const connectionResult = await ocrService.checkOllamaConnection({
+                baseUrl: receiptSettings.ollamaBaseUrl
+            });
+
+            if (!connectionResult.connected) {
+                throw new Error('Cannot connect to Ollama. Please ensure Ollama is running.');
+            }
+
+            setOcrEngineState(prev => ({
+                ...prev,
+                stage: 'loading',
+                progress: 40
+            }));
+
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            setOcrEngineState(prev => ({
+                ...prev,
+                stage: 'warming',
+                progress: 60
+            }));
+
+            await ocrService.warmUpOcr({
+                baseUrl: receiptSettings.ollamaBaseUrl,
+                model: receiptSettings.ollamaModel
+            });
+
+            setOcrEngineState(prev => ({
+                ...prev,
+                stage: 'ready',
+                progress: 100,
+                status: 'ready',
+                lastChecked: new Date().toISOString()
+            }));
+
+        } catch (error) {
+            setOcrEngineState(prev => ({
+                ...prev,
+                status: 'error',
+                stage: null,
+                progress: 0,
+                error: error.message || 'Failed to start OCR engine',
+                lastChecked: new Date().toISOString()
+            }));
+        }
+    }, [ocrEngineState.status, receiptSettings.ollamaBaseUrl, receiptSettings.ollamaModel]);
 
     // Apply dark class to body
     React.useEffect(() => {
@@ -332,7 +407,11 @@ export function KansoProvider({ children }) {
             receiptStats,
             handleAddReceipt,
             handleUpdateReceipt,
-            handleDeleteReceipt
+            handleDeleteReceipt,
+
+            // OCR Engine
+            ocrEngineState,
+            startOcrEngine
         }}>
             {children}
         </KansoContext.Provider>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { invoke } from '@tauri-apps/api/core';
 import { X, Check, Edit2 } from 'lucide-react';
 
 export default function ReceiptReview({ extractedData, imageUrl, onSave, onCancel }) {
@@ -20,6 +21,20 @@ export default function ReceiptReview({ extractedData, imageUrl, onSave, onCance
         confidence: extractedData.confidence || 0
     });
 
+    const saveImageToDisk = async (imageDataUrl, filename) => {
+        try {
+            const base64Data = imageDataUrl.split(',')[1];
+            const filePath = await invoke('save_receipt_image', {
+                imageBase64: base64Data,
+                filename: filename
+            });
+            return filePath;
+        } catch (error) {
+            console.error('Failed to save image:', error);
+            return null;
+        }
+    };
+
     const handleFieldEdit = (field, value) => {
         if (field === 'date') {
             const computedTaxYear = computeTaxYear(value);
@@ -29,9 +44,14 @@ export default function ReceiptReview({ extractedData, imageUrl, onSave, onCance
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
+        const timestamp = Date.now();
+        const filename = `receipt_${timestamp}.png`;
+        const filePath = await saveImageToDisk(imageUrl, filename);
+
         const receipt = {
             imageUrl,
+            imagePath: filePath || null,
             rawExtractedData: extractedData,
             finalMerchant: formData.merchant,
             finalAmount: parseFloat(formData.amount) || 0,

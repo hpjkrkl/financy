@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
 export default function Onboarding({ onComplete }) {
     const [step, setStep] = useState(0);
-    const [isTransitioning, setIsTransitioning] = useState(false);
 
     const [banks, setBanks] = useState([{ name: '', balance: '' }]);
     const [tabungs, setTabungs] = useState([{ name: '', target: '', current: '', bankId: '' }]);
@@ -10,119 +9,111 @@ export default function Onboarding({ onComplete }) {
 
     const expenseCategories = ['bills', 'food', 'transport', 'shopping', 'entertainment', 'health', 'other'];
 
+    const bankOptions = useMemo(() => {
+        return banks.filter(b => b.name).map((bank, i) => ({
+            value: i,
+            label: bank.name
+        }));
+    }, [banks]);
+
     const handleAddBank = () => {
-        setBanks([...banks, { name: '', balance: '' }]);
+        setBanks(prev => [...prev, { name: '', balance: '' }]);
     };
 
     const handleAddTabung = () => {
-        setTabungs([...tabungs, { name: '', target: '', current: '', bankId: '' }]);
+        setTabungs(prev => [...prev, { name: '', target: '', current: '', bankId: '' }]);
     };
 
     const handleAddRecurring = () => {
-        setRecurring([...recurring, { name: '', amount: '', category: 'bills' }]);
+        setRecurring(prev => [...prev, { name: '', amount: '', category: 'bills' }]);
     };
 
-    const handleBankChange = (index, field, value) => {
-        const newBanks = [...banks];
-        newBanks[index][field] = value;
-        setBanks(newBanks);
-    };
+    const handleBankChange = useCallback((index, field, value) => {
+        setBanks(prev => {
+            const newBanks = [...prev];
+            newBanks[index][field] = value;
+            return newBanks;
+        });
+    }, []);
 
-    const handleTabungChange = (index, field, value) => {
-        const newTabungs = [...tabungs];
-        newTabungs[index][field] = value;
-        setTabungs(newTabungs);
-    };
+    const handleTabungChange = useCallback((index, field, value) => {
+        setTabungs(prev => {
+            const newTabungs = [...prev];
+            newTabungs[index][field] = value;
+            return newTabungs;
+        });
+    }, []);
 
-    const handleRecurringChange = (index, field, value) => {
-        const newRecurring = [...recurring];
-        newRecurring[index][field] = value;
-        setRecurring(newRecurring);
-    };
+    const handleRecurringChange = useCallback((index, field, value) => {
+        setRecurring(prev => {
+            const newRecurring = [...prev];
+            newRecurring[index][field] = value;
+            return newRecurring;
+        });
+    }, []);
 
-    const handleRemoveBank = (index) => {
-        if (banks.length > 1) {
-            setBanks(banks.filter((_, i) => i !== index));
-        }
-    };
+    const handleRemoveBank = useCallback((index) => {
+        setBanks(prev => prev.length > 1 ? prev.filter((_, i) => i !== index) : prev);
+    }, []);
 
-    const handleRemoveTabung = (index) => {
-        if (tabungs.length > 1) {
-            setTabungs(tabungs.filter((_, i) => i !== index));
-        }
-    };
+    const handleRemoveTabung = useCallback((index) => {
+        setTabungs(prev => prev.length > 1 ? prev.filter((_, i) => i !== index) : prev);
+    }, []);
 
-    const handleRemoveRecurring = (index) => {
-        if (recurring.length > 1) {
-            setRecurring(recurring.filter((_, i) => i !== index));
-        }
-    };
+    const handleRemoveRecurring = useCallback((index) => {
+        setRecurring(prev => prev.length > 1 ? prev.filter((_, i) => i !== index) : prev);
+    }, []);
 
     const handleFinish = () => {
-        setIsTransitioning(true);
-        setTimeout(() => {
-            const initialBanks = banks
-                .filter(b => b.name && b.balance)
-                .map((b, i) => ({
-                    id: Date.now() + i,
-                    name: b.name,
-                    balance: parseFloat(b.balance)
-                }));
+        const initialBanks = banks
+            .filter(b => b.name && b.balance)
+            .map((b, i) => ({
+                id: Date.now() + i,
+                name: b.name,
+                balance: parseFloat(b.balance)
+            }));
 
-            const initialTabungs = tabungs
-                .filter(t => t.name && t.target && t.bankId)
-                .map((t, i) => ({
-                    id: Date.now() + banks.length + i,
-                    name: t.name,
-                    target: parseFloat(t.target),
-                    current: t.current ? parseFloat(t.current) : 0,
-                    bankId: parseInt(t.bankId)
-                }));
+        const initialTabungs = tabungs
+            .filter(t => t.name && t.target && t.bankId)
+            .map((t, i) => ({
+                id: Date.now() + banks.length + i,
+                name: t.name,
+                target: parseFloat(t.target),
+                current: t.current ? parseFloat(t.current) : 0,
+                bankId: parseInt(t.bankId)
+            }));
 
-            const initialRecurring = recurring
-                .filter(r => r.name && r.amount)
-                .map((r, i) => ({
-                    id: Date.now() + banks.length + tabungs.length + i,
-                    name: r.name,
-                    amount: parseFloat(r.amount),
-                    category: r.category,
-                    dueDate: 1,
-                    isActive: true,
-                    autoRecord: false
-                }));
+        const initialRecurring = recurring
+            .filter(r => r.name && r.amount)
+            .map((r, i) => ({
+                id: Date.now() + banks.length + tabungs.length + i,
+                name: r.name,
+                amount: parseFloat(r.amount),
+                category: r.category,
+                dueDate: 1,
+                isActive: true,
+                autoRecord: false
+            }));
 
-            onComplete({
-                initialBanks,
-                initialTabungs,
-                initialRecurring
-            });
-        }, 800);
+        onComplete({
+            initialBanks,
+            initialTabungs,
+            initialRecurring
+        });
     };
 
     const nextStep = () => {
-        setIsTransitioning(true);
-        setTimeout(() => {
-            setStep((s) => s + 1);
-            setIsTransitioning(false);
-        }, 800);
+        setStep(prev => prev + 1);
     };
 
     const prevStep = () => {
-        setIsTransitioning(true);
-        setTimeout(() => {
-            setStep((s) => s - 1);
-            setIsTransitioning(false);
-        }, 800);
+        setStep(prev => prev - 1);
     };
 
     useEffect(() => {
         if (step === 0 || step === 1) {
             const timer = setTimeout(() => {
-                setIsTransitioning(true);
-                setTimeout(() => {
-                    setStep((s) => s + 1);
-                    setIsTransitioning(false);
-                }, 800);
+                setStep(prev => prev + 1);
             }, 4000);
             return () => clearTimeout(timer);
         }
@@ -137,8 +128,7 @@ export default function Onboarding({ onComplete }) {
             </div>
 
             <div
-                className={`max-w-2xl w-full text-center transition-opacity duration-800 ease-in-out ${isTransitioning ? 'opacity-0' : 'opacity-100'
-                    }`}
+                className="max-w-2xl w-full text-center"
             >
                 {step === 0 && (
                     <div className="animate-fade-in-slow">
@@ -163,7 +153,7 @@ export default function Onboarding({ onComplete }) {
                 )}
 
                 {step === 2 && (
-                    <div className="animate-fade-in-slow">
+                    <div className="transition-opacity duration-300 ease-out">
                         <h2 className="font-serif text-4xl md:text-5xl leading-tight text-ink mb-8">
                             Your Banks
                         </h2>
@@ -239,7 +229,7 @@ export default function Onboarding({ onComplete }) {
                 )}
 
                 {step === 3 && (
-                    <div className="animate-fade-in-slow">
+                    <div className="transition-opacity duration-300 ease-out">
                         <h2 className="font-serif text-4xl md:text-5xl leading-tight text-ink mb-8">
                             Your Tabungs
                         </h2>
@@ -300,13 +290,11 @@ export default function Onboarding({ onComplete }) {
                                             className="kanso-input w-full"
                                         >
                                             <option value="">Select bank</option>
-                                            {banks
-                                                .filter(b => b.name)
-                                                .map((bank, i) => (
-                                                    <option key={i} value={i}>
-                                                        {bank.name}
-                                                    </option>
-                                                ))}
+                                            {bankOptions.map((bank) => (
+                                                <option key={bank.value} value={bank.value}>
+                                                    {bank.label}
+                                                </option>
+                                            ))}
                                         </select>
                                     </div>
                                 </div>
@@ -341,7 +329,7 @@ export default function Onboarding({ onComplete }) {
                 )}
 
                 {step === 4 && (
-                    <div className="animate-fade-in-slow">
+                    <div className="transition-opacity duration-300 ease-out">
                         <h2 className="font-serif text-4xl md:text-5xl leading-tight text-ink mb-8">
                             Recurring Expenses
                         </h2>

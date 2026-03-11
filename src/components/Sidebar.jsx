@@ -18,8 +18,11 @@ export default function Sidebar({ activeTab, setActiveTab, onOpenArchive }) {
         <aside className="hidden md:flex flex-col w-64 border-r border-sand justify-between p-10 z-20 bg-paper">
             <div>
                 {/* Brand */}
-                <div className="font-medium tracking-[0.2em] text-xs text-ink mb-16 select-none">
-                    KANSO.
+                <div className="flex items-center gap-3 mb-16">
+                    <img src="/favicon.svg" alt="Kanso Logo" className="w-10 h-10" />
+                    <div className="font-medium tracking-[0.2em] text-xs text-ink select-none">
+                        KANSO.
+                    </div>
                 </div>
 
                 {/* Navigation */}
