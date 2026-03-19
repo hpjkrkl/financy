@@ -2,7 +2,6 @@ import { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import MobileHeader from './components/MobileHeader';
 import OverviewPage from './components/OverviewPage';
-import TransactionsPage from './components/TransactionsPage';
 import BanksPage from './components/BanksPage';
 import TabungsPage from './components/TabungsPage';
 import RecurringPage from './components/RecurringPage';
@@ -51,7 +50,6 @@ function InnerApp() {
                     </div>
 
                     {activeTab === 'overview' && <OverviewPage />}
-                    {activeTab === 'transactions' && <TransactionsPage />}
                     {activeTab === 'banks' && <BanksPage />}
                     {activeTab === 'tabungs' && <TabungsPage />}
                     {activeTab === 'recurring' && <RecurringPage />}

@@ -5,7 +5,6 @@ export default function Sidebar({ activeTab, setActiveTab, onOpenArchive }) {
 
     const navItems = [
         { key: 'overview', label: 'Overview' },
-        { key: 'transactions', label: 'Transactions' },
         { key: 'banks', label: 'Banks' },
         { key: 'tabungs', label: 'Tabungs' },
         { key: 'recurring', label: 'Recurring' },
